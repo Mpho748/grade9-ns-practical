@@ -59,7 +59,39 @@
     }
 
     main{
-      max-width:1150px;
+      <section id="loginSection" class="card" style="max-width:520px;margin:30px auto;padding:25px;">
+  <h2 style="color:#18365d;margin-top:0;">Facilitator Sign In</h2>
+
+  <p style="color:#667085;">
+    Sign in to securely view Grade 9 Natural Sciences learner submissions.
+  </p>
+
+  <input
+    id="loginEmail"
+    type="email"
+    placeholder="Facilitator email"
+    style="width:100%;margin-bottom:12px;"
+  >
+
+  <input
+    id="loginPassword"
+    type="password"
+    placeholder="Password"
+    style="width:100%;margin-bottom:12px;"
+  >
+
+  <button
+    id="loginButton"
+    style="width:100%;background:#18365d;color:white;"
+  >
+    Sign in
+  </button>
+
+  <div
+    id="loginError"
+    style="display:none;color:#a83b3b;margin-top:12px;"
+  ></div>
+</section>      max-width:1150px;
       margin:28px auto;
       padding:0 18px 60px;
     }
@@ -424,8 +456,13 @@
     getDocs
   }
   from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
-
-
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+  signOut
+}
+from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
   const firebaseConfig = {
     apiKey: "AIzaSyDAbPFvQdYT5CeoZA-1IPzLkEWjMstw1zE",
     authDomain: "verve-grade-9-ns-practical.firebaseapp.com",
@@ -438,10 +475,34 @@
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
+const auth = getAuth(app);  let submissions = [];
+const loginSection = document.getElementById("loginSection");
+const loginEmail = document.getElementById("loginEmail");
+const loginPassword = document.getElementById("loginPassword");
+const loginButton = document.getElementById("loginButton");
+const loginError = document.getElementById("loginError");
 
-  let submissions = [];
+loginButton.addEventListener("click", async () => {
+  loginError.style.display = "none";
+  loginButton.disabled = true;
+  loginButton.textContent = "Signing in...";
 
-
+  try {
+    await signInWithEmailAndPassword(
+      auth,
+      loginEmail.value.trim(),
+      loginPassword.value
+    );
+  } catch (error) {
+    console.error("Login error:", error);
+    loginError.textContent =
+      "Sign in failed. Please check your email address and password.";
+    loginError.style.display = "block";
+  } finally {
+    loginButton.disabled = false;
+    loginButton.textContent = "Sign in";
+  }
+});
   const totalEl = document.getElementById("totalSubmissions");
   const class91El = document.getElementById("class91");
   const class92El = document.getElementById("class92");
@@ -754,8 +815,14 @@
   }
 
 
-  startLiveDashboard();
-
+  onAuthStateChanged(auth, (user) => {
+  if (user) {
+    loginSection.style.display = "none";
+    startLiveDashboard();
+  } else {
+    loginSection.style.display = "block";
+  }
+});
 </script>
 
 </body>
