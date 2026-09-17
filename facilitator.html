@@ -61,37 +61,6 @@
     main{
       <section id="loginSection" class="card" style="max-width:520px;margin:30px auto;padding:25px;">
   <h2 style="color:#18365d;margin-top:0;">Facilitator Sign In</h2>
-
-  <p style="color:#667085;">
-    Sign in to securely view Grade 9 Natural Sciences learner submissions.
-  </p>
-
-  <input
-    id="loginEmail"
-    type="email"
-    placeholder="Facilitator email"
-    style="width:100%;margin-bottom:12px;"
-  >
-
-  <input
-    id="loginPassword"
-    type="password"
-    placeholder="Password"
-    style="width:100%;margin-bottom:12px;"
-  >
-
-  <button
-    id="loginButton"
-    style="width:100%;background:#18365d;color:white;"
-  >
-    Sign in
-  </button>
-
-  <div
-    id="loginError"
-    style="display:none;color:#a83b3b;margin-top:12px;"
-  ></div>
-</section>      max-width:1150px;
       margin:28px auto;
       padding:0 18px 60px;
     }
@@ -345,7 +314,40 @@
 </header>
 
 <main>
+<section id="loginSection" class="card" style="max-width:520px;margin:30px auto;padding:25px;">
+  <h2 style="color:#18365d;margin-top:0;">Facilitator Sign In</h2>
 
+  <p style="color:#667085;">
+    Sign in to securely view Grade 9 Natural Sciences learner submissions.
+  </p>
+
+  <input
+    id="loginEmail"
+    type="email"
+    placeholder="Facilitator email"
+    style="width:100%;margin-bottom:12px;"
+  >
+
+  <input
+    id="loginPassword"
+    type="password"
+    placeholder="Password"
+    style="width:100%;margin-bottom:12px;"
+  >
+
+  <button
+    id="loginButton"
+    style="width:100%;background:#18365d;color:white;"
+  >
+    Sign in
+  </button>
+
+  <div
+    id="loginError"
+    style="display:none;color:#a83b3b;margin-top:12px;"
+  ></div>
+</section>  
+  
   <section class="hero">
     <h2>Learner Submissions</h2>
     <div>
@@ -482,8 +484,7 @@ const loginPassword = document.getElementById("loginPassword");
 const loginButton = document.getElementById("loginButton");
 const loginError = document.getElementById("loginError");
 
-loginButton.addEventListener("click", async () => {
-  loginError.style.display = "none";
+loginButton?.addEventListener("click", async () => {  loginError.style.display = "none";
   loginButton.disabled = true;
   loginButton.textContent = "Signing in...";
 
