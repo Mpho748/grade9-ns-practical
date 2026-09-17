@@ -80,4 +80,23 @@ async function makePDF(){
 }
 $('download').onclick=makePDF;$('reset').onclick=()=>{if(confirm('Clear all saved answers and start again?')){localStorage.removeItem('verveNSNightMarket2026');location.reload()}};load();update();window.addEventListener('resize',drawGraph);
 </script>
-</body></html>
+  <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+  import { getFirestore } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+  import { getAuth } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDAbPFvQdYT5CeoZA-1IPzLkEWjMstWlzE",
+    authDomain: "verve-grade-9-ns-practical.firebaseapp.com",
+    projectId: "verve-grade-9-ns-practical",
+    storageBucket: "verve-grade-9-ns-practical.firebasestorage.app",
+    messagingSenderId: "793573879834",
+    appId: "1:793573879834:web:38759dd76ae2981a3821a3"
+  };
+
+  const firebaseApp = initializeApp(firebaseConfig);
+  const db = getFirestore(firebaseApp);
+  const auth = getAuth(firebaseApp);
+
+  console.log("Verve NS Practical connected to Firebase");
+</script></body></html>
