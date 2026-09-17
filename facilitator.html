@@ -496,8 +496,7 @@ loginButton?.addEventListener("click", async () => {  loginError.style.display =
     );
   } catch (error) {
     console.error("Login error:", error);
-    loginError.textContent =
-      "Sign in failed. Please check your email address and password.";
+loginError.textContent = "Sign in failed: " + error.code;    
     loginError.style.display = "block";
   } finally {
     loginButton.disabled = false;
