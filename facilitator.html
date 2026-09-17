@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Verve College | Grade 9 NS Facilitator Dashboard</title>
+
+  <style>
+    :root{
+      --navy:#18365d;
+      --blue:#2f5597;
+      --soft:#eef4fa;
+      --line:#d8dee8;
+      --green:#19734b;
+      --amber:#a56600;
+      --red:#a83b3b;
+      --ink:#172033;
+    }
+
+    *{box-sizing:border-box}
+
+    body{
+      margin:0;
+      font-family:Arial,Helvetica,sans-serif;
+      background:#f5f7fa;
+      color:var(--ink);
+    }
+
+    header{
+      background:white;
+      border-bottom:1px solid var(--line);
+      padding:18px 24px;
+    }
+
+    .top{
+      max-width:1150px;
+      margin:auto;
+      display:flex;
+      align-items:center;
+      gap:18px;
+    }
+
+    .logo{
+      width:100px;
+      max-height:65px;
+      object-fit:contain;
+    }
+
+    h1{
+      margin:0;
+      color:var(--navy);
+      font-size:25px;
+    }
+
+    .subtitle{
+      color:#667085;
+      margin-top:5px;
+    }
+
+    main{
+      max-width:1150px;
+      margin:28px auto;
+      padding:0 18px 60px;
+    }
+
+    .hero{
+      background:linear-gradient(135deg,#18365d,#2f5597);
+      color:white;
+      padding:25px;
+      border-radius:16px;
+      margin-bottom:22px;
+    }
+
+    .hero h2{
+      margin:0 0 7px;
+    }
+
+    .stats{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:14px;
+      margin-bottom:22px;
+    }
+
+    .stat{
+      background:white;
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:20px;
+    }
+
+    .stat-number{
+      font-size:30px;
+      font-weight:700;
+      color:var(--navy);
+    }
+
+    .stat-label{
+      margin-top:5px;
+      color:#667085;
+    }
+
+    .toolbar{
+      display:flex;
+      gap:10px;
+      margin-bottom:16px;
+    }
+
+    input{
+      flex:1;
+      padding:13px;
+      border:1px solid #cfd6df;
+      border-radius:9px;
+      font-size:15px;
+    }
+
+    button{
+      border:none;
+      border-radius:9px;
+      padding:11px 15px;
+      cursor:pointer;
+      font-weight:700;
+    }
+
+    .refresh{
+      background:var(--navy);
+      color:white;
+    }
+
+    .card{
+      background:white;
+      border:1px solid var(--line);
+      border-radius:15px;
+      overflow:hidden;
+    }
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+    }
+
+    th{
+      background:#eef2f6;
+      color:var(--navy);
+      text-align:left;
+      padding:13px;
+      font-size:13px;
+    }
+
+    td{
+      padding:14px 13px;
+      border-top:1px solid #edf0f3;
+      vertical-align:middle;
+    }
+
+    .learner{
+      font-weight:700;
+    }
+
+    .status{
+      display:inline-block;
+      background:#e8f5ee;
+      color:var(--green);
+      padding:6px 10px;
+      border-radius:20px;
+      font-size:12px;
+      font-weight:700;
+    }
+
+    .view{
+      background:#e9eff8;
+      color:var(--navy);
+    }
+
+    .empty{
+      padding:35px;
+      text-align:center;
+      color:#777;
+    }
+
+    .loading{
+      padding:30px;
+      text-align:center;
+      color:#667085;
+    }
+
+    .error{
+      background:#fff1f1;
+      color:var(--red);
+      padding:14px;
+      border-radius:10px;
+      margin-bottom:15px;
+      display:none;
+    }
+
+    /* Learner detail panel */
+
+    .overlay{
+      position:fixed;
+      inset:0;
+      background:rgba(12,22,38,.55);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:20px;
+      z-index:100;
+    }
+
+    .modal{
+      width:min(850px,100%);
+      max-height:90vh;
+      overflow:auto;
+      background:white;
+      border-radius:16px;
+      padding:24px;
+    }
+
+    .modal-head{
+      display:flex;
+      justify-content:space-between;
+      gap:15px;
+      align-items:flex-start;
+      border-bottom:1px solid var(--line);
+      padding-bottom:15px;
+      margin-bottom:18px;
+    }
+
+    .modal h2{
+      margin:0;
+      color:var(--navy);
+    }
+
+    .close{
+      background:#edf0f4;
+      color:#333;
+    }
+
+    .detail-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+      margin-bottom:20px;
+    }
+
+    .detail{
+      background:#f6f8fb;
+      padding:13px;
+      border-radius:9px;
+    }
+
+    .detail small{
+      display:block;
+      color:#777;
+      margin-bottom:4px;
+    }
+
+    .section-title{
+      color:var(--navy);
+      margin:23px 0 10px;
+      border-bottom:2px solid #e4e8ee;
+      padding-bottom:7px;
+    }
+
+    .answer{
+      border:1px solid #e2e6eb;
+      border-radius:9px;
+      margin-bottom:9px;
+      padding:12px;
+    }
+
+    .answer-key{
+      font-size:12px;
+      font-weight:700;
+      color:#667085;
+      margin-bottom:5px;
+    }
+
+    .answer-value{
+      white-space:pre-wrap;
+      overflow-wrap:anywhere;
+    }
+
+    footer{
+      text-align:center;
+      color:#7b8490;
+      padding:20px;
+      font-size:12px;
+    }
+
+    @media(max-width:700px){
+      .stats{grid-template-columns:1fr}
+      .toolbar{flex-direction:column}
+      .detail-grid{grid-template-columns:1fr}
+      table{font-size:13px}
+      th:nth-child(4),td:nth-child(4){display:none}
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div class="top">
+    <img src="verve-logo.png" class="logo" alt="Verve College">
+    <div>
+      <h1>Grade 9 Natural Sciences</h1>
+      <div class="subtitle">
+        Facilitator Dashboard · Night Market Electrical Lighting Investigation
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <section class="hero">
+    <h2>Learner Submissions</h2>
+    <div>
+      Live facilitator view for the Grade 9 Natural Sciences formal practical assessment.
+    </div>
+  </section>
+
+  <div id="errorBox" class="error"></div>
+
+  <section class="stats">
+    <div class="stat">
+      <div class="stat-number" id="totalSubmissions">0</div>
+      <div class="stat-label">Total submissions</div>
+    </div>
+
+    <div class="stat">
+      <div class="stat-number" id="class91">0</div>
+      <div class="stat-label">Grade 9.1 submissions</div>
+    </div>
+
+    <div class="stat">
+      <div class="stat-number" id="class92">0</div>
+      <div class="stat-label">Grade 9.2 submissions</div>
+    </div>
+  </section>
+
+  <div class="toolbar">
+    <input
+      id="search"
+      type="text"
+      placeholder="Search learner name or class..."
+    >
+    <button class="refresh" id="refreshButton">Refresh</button>
+  </div>
+
+  <section class="card">
+    <div id="loading" class="loading">
+      Loading learner submissions…
+    </div>
+
+    <table id="submissionTable" style="display:none">
+      <thead>
+        <tr>
+          <th>Learner</th>
+          <th>Class</th>
+          <th>Status</th>
+          <th>Submitted</th>
+          <th>Work</th>
+        </tr>
+      </thead>
+      <tbody id="submissionBody"></tbody>
+    </table>
+
+    <div id="empty" class="empty" style="display:none">
+      No learner submissions found.
+    </div>
+  </section>
+
+</main>
+
+<div class="overlay" id="overlay">
+  <div class="modal">
+
+    <div class="modal-head">
+      <div>
+        <h2 id="modalName">Learner submission</h2>
+        <div id="modalClass" class="subtitle"></div>
+      </div>
+
+      <button class="close" id="closeModal">Close</button>
+    </div>
+
+    <div class="detail-grid">
+      <div class="detail">
+        <small>Assessment</small>
+        <strong id="modalAssessment"></strong>
+      </div>
+
+      <div class="detail">
+        <small>Submitted</small>
+        <strong id="modalDate"></strong>
+      </div>
+    </div>
+
+    <h3 class="section-title">Learner responses</h3>
+
+    <div id="answerList"></div>
+
+  </div>
+</div>
+
+<footer>
+  Verve College · Grade 9 · Natural Sciences · Formal Practical Assessment · 2026
+</footer>
+
+
+<script type="module">
+
+  import { initializeApp }
+  from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+
+  import {
+    getFirestore,
+    collection,
+    query,
+    orderBy,
+    onSnapshot,
+    getDocs
+  }
+  from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDAbPFvQdYT5CeoZA-1IPzLkEWjMstw1zE",
+    authDomain: "verve-grade-9-ns-practical.firebaseapp.com",
+    projectId: "verve-grade-9-ns-practical",
+    storageBucket: "verve-grade-9-ns-practical.firebasestorage.app",
+    messagingSenderId: "793573879834",
+    appId: "1:793573879834:web:38759dd76ae2981a3821a3"
+  };
+
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  let submissions = [];
+
+
+  const totalEl = document.getElementById("totalSubmissions");
+  const class91El = document.getElementById("class91");
+  const class92El = document.getElementById("class92");
+
+  const bodyEl = document.getElementById("submissionBody");
+  const tableEl = document.getElementById("submissionTable");
+
+  const loadingEl = document.getElementById("loading");
+  const emptyEl = document.getElementById("empty");
+  const errorEl = document.getElementById("errorBox");
+
+  const searchEl = document.getElementById("search");
+
+  const overlay = document.getElementById("overlay");
+
+
+  function safe(value){
+    if(value === undefined || value === null || value === ""){
+      return "—";
+    }
+
+    if(typeof value === "boolean"){
+      return value ? "Yes" : "No";
+    }
+
+    if(typeof value === "object"){
+      return JSON.stringify(value,null,2);
+    }
+
+    return String(value);
+  }
+
+
+  function formatDate(timestamp){
+
+    if(!timestamp){
+      return "Pending timestamp";
+    }
+
+    try{
+
+      const date = timestamp.toDate
+        ? timestamp.toDate()
+        : new Date(timestamp);
+
+      return date.toLocaleString("en-ZA",{
+        dateStyle:"medium",
+        timeStyle:"short"
+      });
+
+    }catch(e){
+      return "—";
+    }
+  }
+
+
+  function escapeHTML(text){
+
+    const div = document.createElement("div");
+    div.textContent = safe(text);
+    return div.innerHTML;
+  }
+
+
+  function updateStats(){
+
+    totalEl.textContent = submissions.length;
+
+    class91El.textContent =
+      submissions.filter(item =>
+        String(item.className || "")
+        .toLowerCase()
+        .includes("9.1")
+      ).length;
+
+    class92El.textContent =
+      submissions.filter(item =>
+        String(item.className || "")
+        .toLowerCase()
+        .includes("9.2")
+      ).length;
+  }
+
+
+  function render(){
+
+    const term = searchEl.value
+      .trim()
+      .toLowerCase();
+
+    const filtered = submissions.filter(item => {
+
+      const name =
+        String(item.learnerName || "").toLowerCase();
+
+      const learnerClass =
+        String(item.className || "").toLowerCase();
+
+      return (
+        name.includes(term) ||
+        learnerClass.includes(term)
+      );
+    });
+
+
+    bodyEl.innerHTML = "";
+
+
+    if(filtered.length === 0){
+
+      tableEl.style.display = "none";
+      emptyEl.style.display = "block";
+      return;
+    }
+
+
+    emptyEl.style.display = "none";
+    tableEl.style.display = "table";
+
+
+    filtered.forEach(item => {
+
+      const row = document.createElement("tr");
+
+      row.innerHTML = `
+        <td class="learner">
+          ${escapeHTML(item.learnerName)}
+        </td>
+
+        <td>
+          ${escapeHTML(item.className)}
+        </td>
+
+        <td>
+          <span class="status">Submitted</span>
+        </td>
+
+        <td>
+          ${escapeHTML(formatDate(item.submittedAt))}
+        </td>
+
+        <td>
+          <button
+            class="view"
+            data-id="${item.id}">
+            View answers
+          </button>
+        </td>
+      `;
+
+      bodyEl.appendChild(row);
+    });
+
+
+    document
+      .querySelectorAll(".view")
+      .forEach(button => {
+
+        button.addEventListener("click",() => {
+
+          const item =
+            submissions.find(
+              submission =>
+                submission.id === button.dataset.id
+            );
+
+          if(item){
+            openSubmission(item);
+          }
+
+        });
+
+      });
+
+  }
+
+
+  function openSubmission(item){
+
+    document.getElementById("modalName")
+      .textContent =
+      item.learnerName || "Learner";
+
+    document.getElementById("modalClass")
+      .textContent =
+      item.className || "";
+
+    document.getElementById("modalAssessment")
+      .textContent =
+      item.assessment ||
+      "Grade 9 NS Night Market Practical";
+
+    document.getElementById("modalDate")
+      .textContent =
+      formatDate(item.submittedAt);
+
+
+    const answerList =
+      document.getElementById("answerList");
+
+    answerList.innerHTML = "";
+
+
+    const answers = item.answers || {};
+
+    const entries = Object.entries(answers);
+
+
+    if(entries.length === 0){
+
+      answerList.innerHTML =
+        "<div class='empty'>No answers stored for this submission.</div>";
+
+    }else{
+
+      entries.forEach(([key,value]) => {
+
+        const box =
+          document.createElement("div");
+
+        box.className = "answer";
+
+        box.innerHTML = `
+          <div class="answer-key">
+            ${escapeHTML(key)}
+          </div>
+
+          <div class="answer-value">
+            ${escapeHTML(value)}
+          </div>
+        `;
+
+        answerList.appendChild(box);
+
+      });
+
+    }
+
+
+    overlay.style.display = "flex";
+  }
+
+
+  document.getElementById("closeModal")
+    .addEventListener("click",() => {
+      overlay.style.display = "none";
+    });
+
+
+  overlay.addEventListener("click",(event) => {
+
+    if(event.target === overlay){
+      overlay.style.display = "none";
+    }
+
+  });
+
+
+  searchEl.addEventListener("input",render);
+
+
+  document.getElementById("refreshButton")
+    .addEventListener("click",() => {
+      window.location.reload();
+    });
+
+
+  function startLiveDashboard(){
+
+    errorEl.style.display = "none";
+
+    const submissionsQuery =
+      query(
+        collection(db,"submissions"),
+        orderBy("submittedAt","desc")
+      );
+
+
+    onSnapshot(
+      submissionsQuery,
+
+      snapshot => {
+
+        submissions =
+          snapshot.docs.map(doc => ({
+            id:doc.id,
+            ...doc.data()
+          }));
+
+        loadingEl.style.display = "none";
+
+        updateStats();
+        render();
+
+      },
+
+      error => {
+
+        console.error(error);
+
+        loadingEl.style.display = "none";
+
+        errorEl.style.display = "block";
+
+        errorEl.textContent =
+          "The dashboard could not load the submissions. Check the Firestore permissions and refresh the page.";
+
+      }
+    );
+  }
+
+
+  startLiveDashboard();
+
+</script>
+
+</body>
+</html>
