@@ -78,12 +78,14 @@ async function makePDF(){
  doc.addPage();addHeader(doc,4,totalPages);y=qHead(doc,'QUESTION 4: ANALYSIS, CONCLUSION AND NIGHT MARKET APPLICATION','[7 MARKS]',23);const qa2=[['4.1  Describe the relationship between potential difference and current.',$('relationship').value,'(2)'],['4.2  Calculate resistance using ONE pair of readings. Show formula, substitution and unit.',$('calculation').value,'(2)'],['4.3  Do your results support your hypothesis? Use evidence from your results.',$('conclusion').value,'(1)'],['4.4  Explain why understanding the relationship between potential difference and current is important when planning the Verve College Night Market lighting circuit.',$('lighting').value,'(2)']];qa2.forEach(([q,a,m])=>{doc.setFont('helvetica','bold');doc.setFontSize(8.5);doc.text(q,18,y);doc.text(m,192,y,{align:'right'});doc.setFont('helvetica','normal');y=wrap(doc,a,22,y+6,164,4.5)+12});doc.setFont('helvetica','bold');doc.setFontSize(10);doc.text('END OF PRACTICAL ASSESSMENT',105,235,{align:'center'});doc.text('TOTAL: 30 MARKS',105,242,{align:'center'});doc.setFontSize(8);doc.setFont('helvetica','normal');doc.text('Marked by: ______________________________',18,257);doc.text('Date marked: __________________',125,257);doc.text('Moderated by: Francinah Khunou',18,266);doc.text('Date moderated: _______________',125,266);doc.text('Moderator comments:',18,276);doc.line(18,280,192,280);
  const filename=`Night_Market_NS_Practical_${$('learner').value.trim().replace(/[^a-z0-9]+/gi,'_')}_${$('className').value.replace(/\s/g,'_')}.pdf`;doc.save(filename);$('pdfStatus').textContent='Verve-formatted PDF created. Submit the downloaded PDF as instructed by your teacher.';
 }
-$('download').onclick=makePDF;$('reset').onclick=()=>{if(confirm('Clear all saved answers and start again?')){localStorage.removeItem('verveNSNightMarket2026');location.reload()}};load();update();window.addEventListener('resize',drawGraph);
+$('download').onclick = async () => {
+  await submitToFirebase();
+  await makePDF();
+};$('reset').onclick=()=>{if(confirm('Clear all saved answers and start again?')){localStorage.removeItem('verveNSNightMarket2026');location.reload()}};load();update();window.addEventListener('resize',drawGraph);
 </script>
   <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
-  import { getFirestore } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
-  import { getAuth } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+  import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";  import { getAuth } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyDAbPFvQdYT5CeoZA-1IPzLkEWjMstWlzE",
@@ -96,7 +98,44 @@ $('download').onclick=makePDF;$('reset').onclick=()=>{if(confirm('Clear all save
 
   const firebaseApp = initializeApp(firebaseConfig);
   const db = getFirestore(firebaseApp);
-  const auth = getAuth(firebaseApp);
+  async function submitToFirebase() {
+  try {
+    const learnerName = document.getElementById("learner").value.trim();
+    const learnerClass = document.getElementById("className").value;
 
-  console.log("Verve NS Practical connected to Firebase");
+    if (!learnerName || !learnerClass) {
+      alert("Please enter your full name and select your class before submitting.");
+      return;
+    }
+
+    const answers = {};
+
+    document.querySelectorAll("input, textarea, select").forEach((field) => {
+      if (field.id) {
+        if (field.type === "checkbox") {
+          answers[field.id] = field.checked;
+        } else {
+          answers[field.id] = field.value;
+        }
+      }
+    });
+
+    await addDoc(collection(db, "submissions"), {
+      learnerName: learnerName,
+      className: learnerClass,
+      answers: answers,
+      submittedAt: serverTimestamp(),
+      assessment: "Grade 9 NS Night Market Practical",
+      totalMarks: 30
+    });
+
+    alert("Assessment submitted successfully to Verve College.");
+  } catch (error) {
+    console.error("Submission error:", error);
+    alert("Your assessment could not be submitted. Please tell your facilitator before closing this page.");
+  }
+}    
+
+  window.submitToFirebase = submitToFirebase;
+    console.log("Verve NS Practical connected to Firebase");
 </script></body></html>
